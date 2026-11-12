@@ -1,7 +1,7 @@
 """Edit page 9 (酱料研发与工厂生产衔接) table + flow bar of the portfolio PDF.
 
 Usage: python3 -I edit_p9.py IN.pdf OUT.pdf FONTDIR [B]
-FONTDIR holds NotoSansSC-Regular.otf / NotoSansSC-Bold.otf (or swap in msyh files).
+FONTDIR holds NotoSansSC-Regular.ttf / NotoSansSC-Bold.ttf (or swap in msyh files).
 Pass 'B' as 4th arg to use 方案B for 辣牛肉酱.
 """
 import sys, re, json, os
@@ -95,7 +95,7 @@ def make_subset(src, text, out):
                         if m and cmap.get(0xB7) in m:
                             alt = m[cmap[0xB7]]
     opts = subset.Options(); opts.layout_features = []; opts.name_IDs = ['*']
-    opts.notdef_outline = True
+    opts.notdef_outline = True; opts.hinting = False
     ss = subset.Subsetter(opts)
     gl = [cmap[ord(c)] for c in set(text)] + ([alt] if alt else [])
     ss.populate(glyphs=gl, unicodes=[ord(c) for c in set(text)])
@@ -110,13 +110,13 @@ def make_subset(src, text, out):
 all_data = ''.join(''.join(l) for col in COLS for cell in col for l in cell)
 all_data = ''.join(c for c in all_data if c not in '·≥≤')
 all_lab = ''.join(x if isinstance(x, str) else ''.join(x) for x in LABELS)
-REG = os.path.join(WORK, 'p9_reg_subset.otf')
-BLD = os.path.join(WORK, 'p9_bold_subset.otf')
+REG = os.path.join(WORK, 'p9_reg_subset.ttf')
+BLD = os.path.join(WORK, 'p9_bold_subset.ttf')
 SYM = set('·≥≤')
-SYMF = os.path.join(WORK, 'p9_sym_subset.otf')
-fsym = make_subset(os.path.join(FONTDIR, 'Inter-Regular.otf'), ''.join(SYM), SYMF)
-freg = make_subset(os.path.join(FONTDIR, 'NotoSansSC-Regular.otf'), all_data, REG)
-fbld = make_subset(os.path.join(FONTDIR, 'NotoSansSC-Bold.otf'), all_lab, BLD)
+SYMF = os.path.join(WORK, 'p9_sym_subset.ttf')
+fsym = make_subset(os.path.join(FONTDIR, 'DejaVuSans.ttf'), ''.join(SYM), SYMF)
+freg = make_subset(os.path.join(FONTDIR, 'NotoSansSC-Regular.ttf'), all_data, REG)
+fbld = make_subset(os.path.join(FONTDIR, 'NotoSansSC-Bold.ttf'), all_lab, BLD)
 
 def width(ft, s, size):
     if ft is freg and any(c in SYM for c in s):
